@@ -1,0 +1,6 @@
+// 1.21.10	-999999999-01-01T00:00:00	EnchantingSystemRework/Model Definitions
+b825aff79fdf08fe701998ba56536cf1f106603a assets/enchantingsystemrework/blockstates/custom_enchanting_table.json
+85ee7b18cb3970f8661e52cb27dcab797894a3e3 assets/enchantingsystemrework/items/custom_enchanting_table.json
+f42c579d83a09079468b36f6247015100ea199c2 assets/enchantingsystemrework/items/enchanted_scroll.json
+eeb8902113ed70e7881f713ef7fe4573524a32d7 assets/enchantingsystemrework/models/item/custom_enchanting_table.json
+7359a6ba2958da0aabf876a2b51b74b985410eca assets/enchantingsystemrework/models/item/enchanted_scroll.json

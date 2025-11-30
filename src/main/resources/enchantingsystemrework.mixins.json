@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "net.qiuflms.enchantingsystemrework.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"TradeOffersMixin",
+		"LootTableAccessor",
+		"ItemEntryAccessor",
+		"LeafEntryAccessor",
+		"LootPoolAccessor",
+		"AnvilRecipeMixin",
+		"EnchantRandomlyAccessor",
+
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

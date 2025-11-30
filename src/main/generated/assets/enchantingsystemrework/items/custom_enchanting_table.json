@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "enchantingsystemrework:item/custom_enchanting_table"
+  }
+}
