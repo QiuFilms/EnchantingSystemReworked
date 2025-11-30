@@ -9,8 +9,7 @@
 		"LeafEntryAccessor",
 		"LootPoolAccessor",
 		"AnvilRecipeMixin",
-		"EnchantRandomlyAccessor",
-
+		"EnchantRandomlyAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

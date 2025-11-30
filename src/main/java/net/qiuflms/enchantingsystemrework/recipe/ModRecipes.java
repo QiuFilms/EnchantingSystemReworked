@@ -2,13 +2,11 @@ package net.qiuflms.enchantingsystemrework.recipe;
 
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.item.Items;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
 import net.qiuflms.enchantingsystemrework.potions.ModPotions;

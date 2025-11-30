@@ -3,7 +3,6 @@ package net.qiuflms.enchantingsystemrework.block;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.PillarBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
@@ -44,8 +43,6 @@ public class ModBlocks {
     public static void registerModBlocks() {
         EnchantingSystemRework.LOGGER.info("Registering Mod Blocks for " + EnchantingSystemRework.MOD_ID);
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register(entries -> {
-            entries.add(CUSTOM_ENCHANTING_TABLE);
-        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register(entries -> entries.add(CUSTOM_ENCHANTING_TABLE));
     }
 }

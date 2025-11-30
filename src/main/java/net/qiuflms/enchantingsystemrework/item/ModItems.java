@@ -3,18 +3,13 @@ package net.qiuflms.enchantingsystemrework.item;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.*;
-import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.village.TradeOffers;
 import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
-import net.qiuflms.enchantingsystemrework.item.custom.EnchantedScroll;
 
 
 import java.util.function.Function;
@@ -22,7 +17,7 @@ import java.util.function.Function;
 
 public class ModItems {
     public static final Item ENCHANTED_SCROLL = registerItem("enchanted_scroll",
-            settings -> new EnchantedScroll(settings
+            settings -> new Item(settings
                     .maxCount(1)
                     .rarity(Rarity.RARE)
                     .component(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT)
