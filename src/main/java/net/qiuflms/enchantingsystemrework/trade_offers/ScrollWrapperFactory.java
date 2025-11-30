@@ -6,11 +6,14 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
+import net.minecraft.village.TradedItem;
 import net.minecraft.world.World;
 import net.qiuflms.enchantingsystemrework.item.ModItems;
 import net.qiuflms.enchantingsystemrework.util.EnchantmentEntry;
 import net.qiuflms.enchantingsystemrework.util.EnchantmentsHelper;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class ScrollWrapperFactory implements TradeOffers.Factory {
     private final TradeOffers.Factory originalFactory;
@@ -54,7 +57,7 @@ public class ScrollWrapperFactory implements TradeOffers.Factory {
 
         return new TradeOffer(
                 originalOffer.getFirstBuyItem(),
-                originalOffer.getSecondBuyItem(),
+                Optional.of(new TradedItem(Items.PAPER, 5)),
                 scrollStack,
                 originalOffer.getMaxUses(),
                 originalOffer.getMerchantExperience(),

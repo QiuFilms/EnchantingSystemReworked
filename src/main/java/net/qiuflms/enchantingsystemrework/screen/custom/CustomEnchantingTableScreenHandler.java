@@ -228,9 +228,32 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
                 random, generatedEnchantments, slot, luck);
 
 
+
+        ItemStack scrollStack = this.inventory.getStack(2);
+        if (!scrollStack.isEmpty() && scrollStack.isOf(ModItems.ENCHANTED_SCROLL)) {
+
+            ItemEnchantmentsComponent scrollEnchants = scrollStack.get(DataComponentTypes.STORED_ENCHANTMENTS);
+
+            if (scrollEnchants != null) {
+                for (var entry : scrollEnchants.getEnchantmentEntries()) {
+                    EnchantmentLevelEntry scrollEntry = new EnchantmentLevelEntry(entry.getKey(), entry.getIntValue());
+                    if(!scrollEntry.enchantment().value().isAcceptableItem(this.inventory.getStack(0))){
+                        return List.of();
+                    }
+
+                    for (int i = 0; i < generatedEnchantments.size(); i++) {
+                        if(generatedEnchantments.get(i).getEntry() == scrollEntry.enchantment()){
+                            levels.set(i, scrollEntry.level());
+                        }
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < generatedEnchantments.size(); i++) {
             enchantments.add(new EnchantmentLevelEntry(generatedEnchantments.get(i).getEntry(), levels.get(i)));
         }
+
 
         return enchantments;
     }
