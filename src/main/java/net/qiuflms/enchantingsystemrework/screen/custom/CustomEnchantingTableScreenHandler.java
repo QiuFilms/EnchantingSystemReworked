@@ -41,6 +41,7 @@ import net.qiuflms.enchantingsystemrework.util.EnchantmentEntry;
 import net.qiuflms.enchantingsystemrework.util.EnchantmentsHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -207,16 +208,17 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
 
 
     private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, RegistryKey<World> world, double luck){
-        // Define how many bookshelves are needed for each slot
         int levelRequirement = this.enchantmentPower[slot - 1];
 
+        EnchantingSystemRework.LOGGER.info("Power: {}", Arrays.toString(this.enchantmentPower));
         if (slot == 3 && levelRequirement < 30) {
-            this.enchantmentPower[slot - 1] = 0;
+            this.enchantmentPower[2] = 0;
             return List.of(); // Lock the button / Return nothing
         }
 
-        if (slot == 2 && levelRequirement < 10) {
-            this.enchantmentPower[slot - 1] = 0;
+
+        if (slot == 2 && levelRequirement < 9) {
+            this.enchantmentPower[1] = 0;
             return List.of();
         }
 

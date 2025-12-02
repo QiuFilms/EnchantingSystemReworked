@@ -388,13 +388,6 @@ public class EnchantmentsHelper {
 
         int randomValue = random.nextInt(totalWeight) + 1;
 
-
-        EnchantingSystemRework.LOGGER.info(String.valueOf(enchantment.getEntry()));
-
-        EnchantingSystemRework.LOGGER.info("Random Value");
-        EnchantingSystemRework.LOGGER.info(String.valueOf(randomValue));
-        EnchantingSystemRework.LOGGER.info(String.valueOf(totalWeight));
-
         for (int i = 0; i < size; i++) {
             int weight = size * (size - i) - i + ((int) luck) * i;
 
@@ -415,11 +408,16 @@ public class EnchantmentsHelper {
 
 
     public static List<Integer> generateTableLevelEnchantments(RegistryKey<World> world, Random random, List<EnchantmentEntry> enchantments, int buttonLevel, double luck){
+        EnchantingSystemRework.LOGGER.info("Generation");
+
+        EnchantingSystemRework.LOGGER.info(String.valueOf(buttonLevel));
         List<Integer> result = new ArrayList<>();
 
         for(EnchantmentEntry enchantment:enchantments){
             result.add(generateEnchantmentLevel(world, random, enchantment, buttonLevel, luck));
         }
+        EnchantingSystemRework.LOGGER.info(String.valueOf(result.size()));
+
         return result;
     }
 
