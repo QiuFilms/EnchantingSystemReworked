@@ -17,7 +17,6 @@ import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class EnchantmentsHelper {
@@ -335,7 +334,7 @@ public class EnchantmentsHelper {
     }
 
     private static List<Integer> splitIntoThree(int maxLevel, int buttonLevel) {
-        List<Integer> source = IntStream.range(1, maxLevel+1).boxed().collect(Collectors.toList());
+        List<Integer> source = IntStream.range(1, maxLevel+1).boxed().toList();
 
         int size = source.size();
         int split1 = (int) Math.round(size / 3.0);
@@ -365,7 +364,12 @@ public class EnchantmentsHelper {
             if(source.size() == 2){
                 return List.of(2);
             }
-            return new ArrayList<>(source.subList(split2, size));
+            List<Integer> result = new ArrayList<>(source.subList(split1, split2));
+            result.addAll(source.subList(split2, size));
+            return result;
+//            return source;
+
+//           return new ArrayList<>(source.subList(split2, size));
         }
 
         return new ArrayList<>();
@@ -373,14 +377,39 @@ public class EnchantmentsHelper {
 
 
     private static int generateEnchantmentLevel(RegistryKey<World> world, Random random, EnchantmentEntry enchantment, int buttonLevel, double luck){
-        EnchantingSystemRework.LOGGER.info(String.valueOf(world));
         List<Integer> levels = splitIntoThree(enchantment.getLevel().getDimensionLevel(world), buttonLevel);
 
-        float value = Math.min(1, random.nextFloat() + .1f * (Math.max((int) luck, 0)));
-        int i = 0;
-        for (float v = 0; v < value; v += (float) 1/levels.size()) i++;
+        int totalWeight = 0;
+        int size = levels.size();
 
-        return levels.get(i-1);
+        for (int i = 0; i < size; i++) {
+            totalWeight += size * (size - i) - i + ((int) luck) * i;
+        }
+
+        int randomValue = random.nextInt(totalWeight) + 1;
+
+
+        EnchantingSystemRework.LOGGER.info(String.valueOf(enchantment.getEntry()));
+
+        EnchantingSystemRework.LOGGER.info("Random Value");
+        EnchantingSystemRework.LOGGER.info(String.valueOf(randomValue));
+        EnchantingSystemRework.LOGGER.info(String.valueOf(totalWeight));
+
+        for (int i = 0; i < size; i++) {
+            int weight = size * (size - i) - i + ((int) luck) * i;
+
+            if(randomValue <= weight){
+                return levels.get(i);
+            }
+            randomValue -= weight;
+        }
+
+        return 0;
+//        float value = Math.min(1, random.nextFloat() + .1f * (Math.max((int) luck, 0)));
+//        int i = 0;
+//        for (float v = 0; v < value; v += (float) 1/levels.size()) i++;
+//
+//        return levels.get(i-1);
     }
 
 

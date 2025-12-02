@@ -207,6 +207,19 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
 
 
     private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, RegistryKey<World> world, double luck){
+        // Define how many bookshelves are needed for each slot
+        int levelRequirement = this.enchantmentPower[slot - 1];
+
+        if (slot == 3 && levelRequirement < 30) {
+            this.enchantmentPower[slot - 1] = 0;
+            return List.of(); // Lock the button / Return nothing
+        }
+
+        if (slot == 2 && levelRequirement < 10) {
+            this.enchantmentPower[slot - 1] = 0;
+            return List.of();
+        }
+
         this.random.setSeed(this.seed.get() + (long) slot);
 
         List<EnchantmentLevelEntry> enchantments = new ArrayList<>();
@@ -224,7 +237,7 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
         }
 
         List<Integer> levels = EnchantmentsHelper.generateTableLevelEnchantments(
-                world == World.END ? World.NETHER : world,
+                world,
                 random, generatedEnchantments, slot, luck);
 
 
