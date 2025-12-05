@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
@@ -24,8 +25,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
@@ -43,6 +48,16 @@ public class CustomEnchantingTableScreen extends HandledScreen<CustomEnchantingT
     private static final Identifier ENCHANTMENT_SLOT_DISABLED_TEXTURE = Identifier.ofVanilla("container/enchanting_table/enchantment_slot_disabled");
     private static final Identifier ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("container/enchanting_table/enchantment_slot_highlighted");
     private static final Identifier ENCHANTMENT_SLOT_TEXTURE = Identifier.ofVanilla("container/enchanting_table/enchantment_slot");
+    private static final Identifier ENCHANTMENT_SLOT_TEXTURE_OVERWORLD = Identifier.of(EnchantingSystemRework.MOD_ID,"container/enchanting_table/enchantment_slot_dirt");
+    private static final Identifier ENCHANTMENT_SLOT_TEXTURE_NETHER = Identifier.of(EnchantingSystemRework.MOD_ID,"container/enchanting_table/enchantment_slot_nether");
+    private static final Identifier ENCHANTMENT_SLOT_TEXTURE_END = Identifier.of(EnchantingSystemRework.MOD_ID,"container/enchanting_table/enchantment_slot_end");
+    private static final Map<RegistryKey<World>, Identifier> ENCHANTMENT_SLOTS = Map.of(
+        World.OVERWORLD, ENCHANTMENT_SLOT_TEXTURE_OVERWORLD,
+        World.NETHER, ENCHANTMENT_SLOT_TEXTURE_NETHER,
+        World.END, ENCHANTMENT_SLOT_TEXTURE_END
+    );
+
+
     private static final Identifier TEXTURE = Identifier.of(EnchantingSystemRework.MOD_ID,"textures/gui/container/custom_enchanting_table.png");
     private static final Identifier BOOK_TEXTURE = Identifier.ofVanilla("textures/entity/enchanting_table_book.png");
     private final Random random = Random.create();
@@ -81,7 +96,6 @@ public class CustomEnchantingTableScreen extends HandledScreen<CustomEnchantingT
             double d = click.x() - (i + 60);
             double e = click.y() - (j + 14 + 19 * k);
             if (d >= 0.0 && e >= 0.0 && d < 108.0 && e < 19.0 && this.handler.onButtonClick(this.client.player, k)) {
-                EnchantingSystemRework.LOGGER.info("Click-loop");
                 this.client.interactionManager.clickButton(this.handler.syncId, k);
                 return true;
             }
@@ -92,6 +106,12 @@ public class CustomEnchantingTableScreen extends HandledScreen<CustomEnchantingT
 
     @Override
     protected void drawBackground(DrawContext context, float deltaTicks, int mouseX, int mouseY) {
+        if (this.client.world == null) return;
+
+        RegistryKey<World> world = this.client.world.getRegistryKey();
+
+
+
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
@@ -99,41 +119,108 @@ public class CustomEnchantingTableScreen extends HandledScreen<CustomEnchantingT
         EnchantingPhrases.getInstance().setSeed(this.handler.getSeed());
         int k = this.handler.getLapisCount();
 
-        for (int l = 0; l < 3; l++) {
-            int m = i + 60;
-            int n = m + 20;
-            int o = this.handler.enchantmentPower[l];
-            if (o == 0) {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+        int l = 0;
+        if(world == World.NETHER){
+            l = 1;
+        }
+
+        if(world == World.END){
+            l = 2;
+        }
+
+        int o = this.handler.enchantmentPower[l];
+        int m = i + 60;
+        int n = m + 20;
+
+        if(o < 30){
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14, 108, 19);
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19, 108, 19);
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * 2, 108, 19);
+            return;
+        }
+
+        String string = o + "";
+        int p = 86 - this.textRenderer.getWidth(string);
+        StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
+
+        int q = -9937334;
+        if((k < 3 || this.client.player.experienceLevel < o) && !this.client.player.isInCreativeMode()){
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_DISABLED_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
+            context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q, false);
+            q = -12550384;
+        }else{
+            int r = mouseX - (i + 60);
+            int s = mouseY - (j + 14 + 19 * l);
+
+            if (r >= 0 && s >= 0 && r < 108 && s < 19) {
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+                q = -128;
             } else {
-                String string = o + "";
-                int p = 86 - this.textRenderer.getWidth(string);
-                StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
-                int q = -9937334;
-                if ((k < l + 1 || this.client.player.experienceLevel < o) && !this.client.player.isInCreativeMode()) {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_DISABLED_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
-                    context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, ColorHelper.fullAlpha((q & 16711422) >> 1), false);
-                    q = -12550384;
-                } else {
-                    int r = mouseX - (i + 60);
-                    int s = mouseY - (j + 14 + 19 * l);
-                    if (r >= 0 && s >= 0 && r < 108 && s < 19) {
-                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
-                        q = -128;
-                    } else {
-                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_TEXTURE, m, j + 14 + 19 * l, 108, 19);
-                    }
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOTS.get(world), m, j + 14 + 19 * l, 108, 19);
+                q = -128;
+            }
 
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
-                    context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q, false);
-                    q = -8323296;
-                }
+            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_TEXTURES[2], m + 1, j + 15 + 19 * l, 16, 16);
+            context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q, false);
+            q = -8323296;
+        }
 
-                context.drawTextWithShadow(this.textRenderer, string, n + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * l + 7, q);
+        context.drawTextWithShadow(this.textRenderer, string, n + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * l + 7, q);
+
+        for (int r = 0; r < 3; r++) {
+            if(r != l){
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * r, 108, 19);
             }
         }
     }
+
+//    @Override
+//    protected void drawBackground(DrawContext context, float deltaTicks, int mouseX, int mouseY) {
+//        int i = (this.width - this.backgroundWidth) / 2;
+//        int j = (this.height - this.backgroundHeight) / 2;
+//        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 256);
+//
+//        EnchantingPhrases.getInstance().setSeed(this.handler.getSeed());
+//        int k = this.handler.getLapisCount();
+//
+//        for (int l = 0; l < 3; l++) {
+//            int m = i + 60;
+//            int n = m + 20;
+//            int o = this.handler.enchantmentPower[l];
+//
+//            if (o == 0) {
+//                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+//            } else {
+//                String string = o + "";
+//                int p = 86 - this.textRenderer.getWidth(string);
+//                StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
+//                int q = -9937334;
+//                if ((k < l + 1 || this.client.player.experienceLevel < o) && !this.client.player.isInCreativeMode()) {
+//                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+//                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_DISABLED_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
+//                    context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q, false);
+//                    q = -12550384;
+//                } else {
+//                    int r = mouseX - (i + 60);
+//                    int s = mouseY - (j + 14 + 19 * l);
+//                    if (r >= 0 && s >= 0 && r < 108 && s < 19) {
+//                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+//                        q = -128;
+//                    } else {
+//                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_SLOT_TEXTURE_OVERWORLD, m, j + 14 + 19 * l, 108, 19);
+//                        q = -128;
+//                    }
+//
+//                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, LEVEL_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
+//                    context.drawWrappedText(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q, false);
+//                    q = -8323296;
+//                }
+//
+//                context.drawTextWithShadow(this.textRenderer, string, n + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * l + 7, q);
+//            }
+//        }
+//    }
 
     private void drawBook(DrawContext context, int x, int y) {
         float f = this.client.getRenderTickCounter().getTickProgress(false);

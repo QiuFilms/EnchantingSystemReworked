@@ -167,15 +167,20 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
                     this.random.setSeed(this.seed.get());
 
 
+                    int button = world.getRegistryKey() == World.OVERWORLD ? 0 : world.getRegistryKey() == World.NETHER ? 1 : 2;
+
 
                     for (int j = 0; j < 3; j++) {
-                        this.enchantmentPower[j] = EnchantmentHelper.calculateRequiredExperienceLevel(this.random, j, ix, itemStack);
                         this.enchantmentId[j] = -1;
                         this.enchantmentLevel[j] = -1;
 
-                        if (this.enchantmentPower[j] < j + 1) {
+                        if(j == button){
+                            this.enchantmentPower[j] = EnchantmentHelper.calculateRequiredExperienceLevel(this.random, 2, ix, itemStack);
+                        }else{
                             this.enchantmentPower[j] = 0;
+
                         }
+
                     }
 
                     if(!canBeEnchanted()) {
@@ -210,10 +215,9 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
     private List<EnchantmentLevelEntry> generateEnchantments(ItemStack stack, int slot, RegistryKey<World> world, double luck){
         int levelRequirement = this.enchantmentPower[slot - 1];
 
-        EnchantingSystemRework.LOGGER.info("Power: {}", Arrays.toString(this.enchantmentPower));
         if (slot == 3 && levelRequirement < 30) {
             this.enchantmentPower[2] = 0;
-            return List.of(); // Lock the button / Return nothing
+            return List.of();
         }
 
 
@@ -248,18 +252,26 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
         if (!scrollStack.isEmpty() && scrollStack.isOf(ModItems.ENCHANTED_SCROLL)) {
 
             ItemEnchantmentsComponent scrollEnchants = scrollStack.get(DataComponentTypes.STORED_ENCHANTMENTS);
-
             if (scrollEnchants != null) {
+                EnchantingSystemRework.LOGGER.info("asdasdasd");
+
                 for (var entry : scrollEnchants.getEnchantmentEntries()) {
                     EnchantmentLevelEntry scrollEntry = new EnchantmentLevelEntry(entry.getKey(), entry.getIntValue());
                     if(!scrollEntry.enchantment().value().isAcceptableItem(this.inventory.getStack(0))){
                         return List.of();
                     }
 
+
+                    boolean isInGenerated = false;
                     for (int i = 0; i < generatedEnchantments.size(); i++) {
                         if(generatedEnchantments.get(i).getEntry() == scrollEntry.enchantment()){
                             levels.set(i, scrollEntry.level());
+                            isInGenerated = true;
                         }
+                    }
+
+                    if(!isInGenerated){
+                        enchantments.add(scrollEntry);
                     }
                 }
             }
@@ -269,63 +281,8 @@ public class CustomEnchantingTableScreenHandler extends ScreenHandler {
             enchantments.add(new EnchantmentLevelEntry(generatedEnchantments.get(i).getEntry(), levels.get(i)));
         }
 
-
+        EnchantingSystemRework.LOGGER.info(String.valueOf(enchantments.size()));
         return enchantments;
-    }
-
-
-    private List<EnchantmentLevelEntry> generateEnchantments(DynamicRegistryManager registryManager, ItemStack stack, int slot, int level, RegistryKey<World> world) {
-        this.random.setSeed(this.seed.get() + (long) slot);
-
-        Optional<RegistryEntryList.Named<Enchantment>> optional = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT)
-                .getOptional(EnchantmentTags.IN_ENCHANTING_TABLE);
-
-        if (optional.isEmpty()) {
-            return List.of();
-        }
-
-
-        List<EnchantmentLevelEntry> list = EnchantmentsHelper.generateCustomEnchantments(
-                this.random,
-                stack,
-                level,
-                EnchantmentsHelper.removeCurses(EnchantmentsHelper.getWorldEnchantments(world)),
-                World.OVERWORLD
-        );
-
-        if (stack.isOf(Items.BOOK) && list.size() > 1) {
-            list.remove(this.random.nextInt(list.size()));
-        }
-
-        ItemStack scrollStack = this.inventory.getStack(2);
-        if (!scrollStack.isEmpty() && scrollStack.isOf(ModItems.ENCHANTED_SCROLL)) {
-
-            ItemEnchantmentsComponent scrollEnchants = scrollStack.get(DataComponentTypes.STORED_ENCHANTMENTS);
-
-            if (scrollEnchants != null) {
-                for (var entry : scrollEnchants.getEnchantmentEntries()) {
-
-                    EnchantmentLevelEntry scrollEntry = new EnchantmentLevelEntry(entry.getKey(), entry.getIntValue());
-                    if(!scrollEntry.enchantment().value().isAcceptableItem(this.inventory.getStack(0))){
-                        return List.of();
-                    }
-
-                    list.removeIf(randomEntry -> {
-                        if (randomEntry.enchantment() == scrollEntry.enchantment()) {
-                            return true;
-                        }
-
-                        boolean isCompatible = Enchantment.canBeCombined(scrollEntry.enchantment(), randomEntry.enchantment());
-
-                        return !isCompatible;
-                    });
-
-                    list.addFirst(scrollEntry);
-                }
-            }
-        }
-
-        return list;
     }
 
     public int getLapisCount() {

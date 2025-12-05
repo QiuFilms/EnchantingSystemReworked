@@ -137,19 +137,10 @@ public class EnchantmentsHelper {
         return generateSingleTradeableEnchantment(random, generatedEnchantments);
     }
 
-//    public static EnchantmentEntry generateSingleTradeableEnchantment(RegistryKey<World> world, Random random, ItemStack item){
-//        List<EnchantmentEntry> generatedEnchantments = getWorldEnchantments(world, item);
-//        return generateSingleTradeableEnchantment(random, generatedEnchantments);
-//    }
 
     private static EnchantmentEntry generateSingleTradeableEnchantment(Random random, List<EnchantmentEntry> enchantments){
         return generateSingleEnchantment(random, filterTradeableEnchantments(enchantments));
     }
-
-//    public static List<EnchantmentEntry> generateMultipleTradeableEnchantment(RegistryKey<World> world, Random random, List<Float> chances){
-//        List<EnchantmentEntry> generatedEnchantments = getWorldEnchantments(world);
-//        return generateMultipleTradeableEnchantment(random, filterTradeableEnchantments(generatedEnchantments), chances);
-//    }
 
     public static List<EnchantmentEntry> generateMultipleTradeableEnchantment(RegistryKey<World> world, Random random, ItemStack item, List<Float> chances){
         List<EnchantmentEntry> generatedEnchantments = getWorldEnchantments(world, item);
@@ -161,17 +152,13 @@ public class EnchantmentsHelper {
     }
 
     public static List<EnchantmentEntry> filterTradeableEnchantments(List<EnchantmentEntry> enchantments){
-        enchantments.removeIf(enchantment -> {
-            return !enchantment.getEntry().isIn(EnchantmentTags.TRADEABLE);
-        });
+        enchantments.removeIf(enchantment -> !enchantment.getEntry().isIn(EnchantmentTags.TRADEABLE));
 
         return enchantments;
     }
 
     public static List<EnchantmentEntry> filterTableEnchantments(List<EnchantmentEntry> enchantments){
-        enchantments.removeIf(enchantment -> {
-            return !enchantment.getEntry().isIn(EnchantmentTags.IN_ENCHANTING_TABLE);
-        });
+        enchantments.removeIf(enchantment -> !enchantment.getEntry().isIn(EnchantmentTags.IN_ENCHANTING_TABLE));
 
         return enchantments;
     }
@@ -207,11 +194,6 @@ public class EnchantmentsHelper {
         item.set(DataComponentTypes.STORED_ENCHANTMENTS, builder.build());
     }
 
-//    public static void applyEnchantmentComponent(ItemStack item, List<EnchantmentEntry> enchantments, List<Integer> levels){
-//        for (int i = 0; i < enchantments.size(); i++) {
-//            applyEnchantmentComponent(item, enchantments.get(i), levels.get(i));
-//        }
-//    }
 
     public static void applyEnchantment(ItemStack item, EnchantmentEntry enchantment, int level){
         item.addEnchantment(enchantment.getEntry(), level);
@@ -223,16 +205,6 @@ public class EnchantmentsHelper {
         }
     }
 
-//    public static List<EnchantmentEntry> generateMultipleEnchantments(RegistryKey<World> world, Random random, ItemStack item,  List<Float> chances){
-//        List<EnchantmentEntry> generatedEnchantments = getWorldEnchantments(world, item);
-//
-//        return  generateMultipleEnchantments(random, generatedEnchantments, chances);
-//    }
-//
-//    public static List<EnchantmentEntry> generateMultipleEnchantments(RegistryKey<World> world, Random random, List<Float> chances){
-//        List<EnchantmentEntry> generatedEnchantments = getWorldEnchantments(world);
-//        return generateMultipleEnchantments(random, generatedEnchantments, chances);
-//    }
 
     private static List<EnchantmentEntry> generateMultipleEnchantments(Random random, List<EnchantmentEntry> enchantments, List<Float> chances){
         List<EnchantmentEntry> result = new ArrayList<>();
@@ -260,7 +232,7 @@ public class EnchantmentsHelper {
     }
 
     public static List<EnchantmentEntry> generateMultipleEnchantmentsWeightedWithoutCurses(RegistryKey<World> world, Random random, ItemStack item, List<Float> chances, double luck){
-        List<EnchantmentEntry> generatedEnchantments = filterTableEnchantments(getWorldEnchantments(world, item));
+        List<EnchantmentEntry> generatedEnchantments = removeCurses(getWorldEnchantments(world, item));
         return generateMultipleEnchantmentsWeighted(random, generatedEnchantments, chances, luck);
     }
 
@@ -287,16 +259,6 @@ public class EnchantmentsHelper {
         enchantments.removeIf(entry-> !Enchantment.canBeCombined(entry.getEntry(), enchantment.getEntry()));
     }
 
-
-//    public static EnchantmentEntry generateSingleEnchantment(RegistryKey<World> world, Random random){
-//        List<EnchantmentEntry> enchantments = getWorldEnchantments(world);
-//        return generateSingleEnchantment(random, enchantments);
-//    }
-//
-//    public static EnchantmentEntry generateSingleEnchantment(RegistryKey<World> world, Random random, ItemStack item){
-//        List<EnchantmentEntry> enchantments = getWorldEnchantments(world, item);
-//        return generateSingleEnchantment(random, enchantments);
-//    }
 
 
     private static EnchantmentEntry generateSingleEnchantment(Random random, List<EnchantmentEntry> enchantments){
@@ -367,9 +329,6 @@ public class EnchantmentsHelper {
             List<Integer> result = new ArrayList<>(source.subList(split1, split2));
             result.addAll(source.subList(split2, size));
             return result;
-//            return source;
-
-//           return new ArrayList<>(source.subList(split2, size));
         }
 
         return new ArrayList<>();
@@ -398,40 +357,67 @@ public class EnchantmentsHelper {
         }
 
         return 0;
-//        float value = Math.min(1, random.nextFloat() + .1f * (Math.max((int) luck, 0)));
-//        int i = 0;
-//        for (float v = 0; v < value; v += (float) 1/levels.size()) i++;
-//
-//        return levels.get(i-1);
     }
 
 
-
     public static List<Integer> generateTableLevelEnchantments(RegistryKey<World> world, Random random, List<EnchantmentEntry> enchantments, int buttonLevel, double luck){
-        EnchantingSystemRework.LOGGER.info("Generation");
-
-        EnchantingSystemRework.LOGGER.info(String.valueOf(buttonLevel));
         List<Integer> result = new ArrayList<>();
 
         for(EnchantmentEntry enchantment:enchantments){
-            result.add(generateEnchantmentLevel(world, random, enchantment, buttonLevel, luck));
+            result.add(generateTableEnchantmentLevel(world, random, enchantment, luck));
         }
-        EnchantingSystemRework.LOGGER.info(String.valueOf(result.size()));
 
         return result;
     }
 
-//    public static int generateEnchantmentLevelWeighted(RegistryKey<World> world, Random random, EnchantmentEntry enchantment, double luck){
-//        return random.nextBetween(enchantment.getLevel().getMinLevel(world), enchantment.getLevel().getDimensionLevel(world));
-//    }
-//
-//    public static List<Integer> generateEnchantmentLevelWeighted(RegistryKey<World> world, Random random, List<EnchantmentEntry> enchantments){
-//        List<Integer> result = new ArrayList<>();
-//        for(EnchantmentEntry enchantment:enchantments){
-//            result.add(generateEnchantmentLevel(world, random, enchantment));
-//        }
-//        return result;
-//    }
+
+    public static int generateTableEnchantmentLevel(RegistryKey<World> world, Random random, EnchantmentEntry enchantment, double luck){
+        int maxLevel = enchantment.getEnchantment().getMaxLevel();
+
+        if(maxLevel == 1){
+            return 1;
+        }
+
+        int dimensionModifier = World.OVERWORLD == world ? 0 : World.NETHER == world ? 1 : 2;
+
+        int weights = 0;
+        double step = 5f / (maxLevel - 1);
+
+        for (int i = 0; i < maxLevel; i++) {
+            if(luck > 2){
+                weights += weightFunction(luck, step*i, dimensionModifier);
+            }else{
+                weights += weightFunction(luck, -5 + step*i, dimensionModifier);
+
+            }
+        }
+
+        int ticket = random.nextInt(weights + 1);
+
+
+        for (int i = 0; i < maxLevel; i++) {
+            int value;
+
+            if(luck > 2){
+                value= weightFunction(luck, step*i, dimensionModifier);
+            }else{
+                value= weightFunction(luck, -5 + step*i, dimensionModifier);
+
+            }
+
+            if(ticket < value){
+                return i+1;
+            }
+            ticket -= value;
+        }
+        return 1;
+    }
+
+    private static int weightFunction(double luck, double x, int dimensionModifier){
+        luck = luck + dimensionModifier;
+
+        return (int) Math.round((((luck - 3) * 1f/4) * x + 1));
+    }
 
 
     private static boolean canBeCombined(List<EnchantmentEntry> enchantments, EnchantmentEntry enchantment){
@@ -451,18 +437,6 @@ public class EnchantmentsHelper {
         return weights;
     }
 
-
-//    public static List<EnchantmentEntry> generateEnchantmentTableEnchantments(Random random, ItemStack item, int buttonLevel, RegistryKey<World> world){
-//        List<EnchantmentEntry> tradeableEnchantments = generateMultipleEnchantmentsWeighted(world, random, item, );
-//
-//        tradeableEnchantments.get(0).getEnchantment().definition().maxCost().forLevel()
-//    }
-//
-//    private static List<Float> calculateChances
-//
-//    private static int calculateItemEnchantability(int buttonLevel, ItemStack item,  double luck){
-//        return item.getItem().getDefaultStack().get(DataComponentTypes.ENCHANTABLE).value() + buttonLevel + ((int) luck * 5);
-//    }
 
 
     public static List<EnchantmentLevelEntry> generateCustomEnchantments(
