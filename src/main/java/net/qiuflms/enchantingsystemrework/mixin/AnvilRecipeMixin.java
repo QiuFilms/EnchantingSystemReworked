@@ -39,6 +39,8 @@ public abstract class AnvilRecipeMixin extends ForgingScreenHandler {
                     .getEnchantmentEntries().iterator().next().getKey();
 
             if(left == right && leftStack.get(DataComponentTypes.STORED_ENCHANTMENTS).getLevel(left) == rightStack.get(DataComponentTypes.STORED_ENCHANTMENTS).getLevel(right)){
+
+
                 ItemStack outputStack = new ItemStack(ModItems.ENCHANTED_SCROLL);
 
                 if (this.newItemName != null && !this.newItemName.isBlank()) {
@@ -51,15 +53,20 @@ public abstract class AnvilRecipeMixin extends ForgingScreenHandler {
                 int level = leftStack.get(DataComponentTypes.STORED_ENCHANTMENTS).getLevel(left) + 1;
                 int maxLevel = left.value().getMaxLevel();
 
-                ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
-                builder.add(left, Math.min(level, maxLevel));
-                outputStack.set(DataComponentTypes.STORED_ENCHANTMENTS, builder.build());
-                this.output.setStack(2, outputStack);
 
-                this.levelCost.set(Math.min(level, maxLevel)*3);
 
-                this.sendContentUpdates();
-                ci.cancel();
+                if(!(leftStack.get(DataComponentTypes.STORED_ENCHANTMENTS).getLevel(left) == maxLevel)){
+                    ItemEnchantmentsComponent.Builder builder = new ItemEnchantmentsComponent.Builder(ItemEnchantmentsComponent.DEFAULT);
+                    builder.add(left, Math.min(level, maxLevel));
+                    outputStack.set(DataComponentTypes.STORED_ENCHANTMENTS, builder.build());
+                    this.output.setStack(2, outputStack);
+
+                    this.levelCost.set(Math.min(level, maxLevel)*3);
+
+                    this.sendContentUpdates();
+                    ci.cancel();
+                }
+
             }
         }
 

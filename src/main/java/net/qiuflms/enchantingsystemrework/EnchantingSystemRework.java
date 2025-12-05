@@ -36,5 +36,6 @@ public class EnchantingSystemRework implements ModInitializer {
 
 		LootTableHelper.registerLootTable();
 		ServerLifecycleEvents.SERVER_STARTED.register(EnchantmentsHelper::onServerStarted);
+
 	}
 }

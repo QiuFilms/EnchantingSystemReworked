@@ -15,6 +15,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -99,7 +103,6 @@ public class EnchantmentsHelper {
     private static EnchantmentEntry createPair(RegistryKey<Enchantment> enchantmentRegistryKey, Rarity rarity){
         return new EnchantmentEntry(enchantmentRegistryKey, calculateBasicEnchantmentLevels(enchantmentRegistryKey), rarity);
     }
-
 
     private static EnchantmentEntry createPairLockedToWorld(RegistryKey<Enchantment> enchantmentRegistryKey, RegistryKey<World> world, Rarity rarity){
         if(world == World.OVERWORLD){
