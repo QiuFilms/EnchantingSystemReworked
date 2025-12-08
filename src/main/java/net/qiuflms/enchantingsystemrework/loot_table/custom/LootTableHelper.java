@@ -13,6 +13,7 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -22,6 +23,7 @@ import net.qiuflms.enchantingsystemrework.loot_function.custom.ItemEnchant;
 import net.qiuflms.enchantingsystemrework.loot_function.custom.MendingEnchantment;
 import net.qiuflms.enchantingsystemrework.loot_function.custom.SimpleScrollEnchant;
 import net.qiuflms.enchantingsystemrework.mixin.*;
+import net.qiuflms.enchantingsystemrework.potions.ModPotions;
 
 
 import java.util.ArrayList;
@@ -35,10 +37,28 @@ public class LootTableHelper {
             Enchantments.WIND_BURST
     );
 
+    private static LootPool.Builder luckPotionPool = LootPool.builder()
+            .rolls(ConstantLootNumberProvider.create(1))
+            .conditionally(RandomChanceLootCondition.builder(0.1f))
+            .with(ItemEntry.builder(Items.POTION)
+                    .weight(3)
+                    .apply(SetPotionLootFunction.builder(ModPotions.LUCK_3))
+            )
+            .with(ItemEntry.builder(Items.POTION)
+                    .weight(2)
+                    .apply(SetPotionLootFunction.builder(ModPotions.LUCK_4))
+            )
+            .with(ItemEntry.builder(Items.POTION)
+                    .weight(1)
+                    .apply(SetPotionLootFunction.builder(ModPotions.LUCK_5))
+            );
+
+
     public static void registerLootTable(){
         LootTableEvents.REPLACE.register((key, original, source, registries) -> {
             if(key.equals(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST)) return original;
 
+            addPool(original, luckPotionPool.build());
             List<LootPool> originalPools = ((LootTableAccessor) original).getPools();
 
             for (LootPool pool : originalPools) {
@@ -81,10 +101,10 @@ public class LootTableHelper {
 
             if(LootTables.END_CITY_TREASURE_CHEST.equals(key)){
                 LootPool.Builder newPool = LootPool.builder()
-                        .rolls(ConstantLootNumberProvider.create(1)) // 1 losowanie
+                        .rolls(ConstantLootNumberProvider.create(1))
                         .with(ItemEntry.builder(ModItems.ENCHANTED_SCROLL)
                                 .weight(5)
-                                .apply(MendingEnchantment::new)) // Twój przedmiot
+                                .apply(MendingEnchantment::new))
                         .with(ItemEntry.builder(Items.BOOK)
                                 .weight(1)
                                 .apply(MendingEnchantment::new))
@@ -96,6 +116,7 @@ public class LootTableHelper {
             return original;
         });
     }
+
 
 
     private static void addPool(LootTable table, LootPool pool) {

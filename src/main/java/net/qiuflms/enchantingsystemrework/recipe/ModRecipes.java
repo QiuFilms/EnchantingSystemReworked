@@ -33,24 +33,6 @@ public class ModRecipes {
                     Items.GOLD_INGOT,
                     ModPotions.LUCK_2
             );
-
-            builder.registerPotionRecipe(
-                    ModPotions.LUCK_2,
-                    Items.EMERALD,
-                    ModPotions.LUCK_3
-            );
-
-            builder.registerPotionRecipe(
-                    ModPotions.LUCK_3,
-                    Items.GOLD_BLOCK,
-                    ModPotions.LUCK_4
-            );
-
-            builder.registerPotionRecipe(
-                    ModPotions.LUCK_4,
-                    Items.EMERALD_BLOCK,
-                    ModPotions.LUCK_5
-            );
         });
     }
 

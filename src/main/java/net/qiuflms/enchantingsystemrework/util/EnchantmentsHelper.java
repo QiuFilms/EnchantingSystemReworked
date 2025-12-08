@@ -497,7 +497,6 @@ public class EnchantmentsHelper {
 
         int level = base + bonus + 1;
 
-        // Waniliowy "Fuzz Factor" (wahanie +/- 15%)
         float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
         level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
 
@@ -512,7 +511,6 @@ public class EnchantmentsHelper {
         for (EnchantmentEntry entry : allowed) {
             Enchantment enchantment = entry.getEnchantment();
 
-            // A. Czy pasuje do przedmiotu? (Lub czy to książka)
             if (!enchantment.isAcceptableItem(stack) && !stack.isOf(Items.BOOK)) {
                 continue;
             }
