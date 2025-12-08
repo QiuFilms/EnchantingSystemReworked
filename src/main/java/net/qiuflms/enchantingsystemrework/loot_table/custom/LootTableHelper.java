@@ -39,7 +39,7 @@ public class LootTableHelper {
 
     private static LootPool.Builder luckPotionPool = LootPool.builder()
             .rolls(ConstantLootNumberProvider.create(1))
-            .conditionally(RandomChanceLootCondition.builder(0.1f))
+            .conditionally(RandomChanceLootCondition.builder(0.15f))
             .with(ItemEntry.builder(Items.POTION)
                     .weight(3)
                     .apply(SetPotionLootFunction.builder(ModPotions.LUCK_3))
