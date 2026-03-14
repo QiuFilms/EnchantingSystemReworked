@@ -18,6 +18,9 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.util.Identifier;
+import net.qiuflms.enchantingsystemrework.EnchantingSystemRework;
+import net.qiuflms.enchantingsystemrework.EnchantingSystemReworkClient;
 import net.qiuflms.enchantingsystemrework.item.ModItems;
 import net.qiuflms.enchantingsystemrework.loot_function.custom.ItemEnchant;
 import net.qiuflms.enchantingsystemrework.loot_function.custom.MendingEnchantment;
@@ -56,6 +59,12 @@ public class LootTableHelper {
 
     public static void registerLootTable(){
         LootTableEvents.REPLACE.register((key, original, source, registries) -> {
+            Identifier id = key.getValue();
+
+            if (!id.getPath().startsWith("chests/")) {
+                return original;
+            }
+
             if(key.equals(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE_CHEST)) return original;
 
             addPool(original, luckPotionPool.build());
